@@ -1,8 +1,6 @@
-use std::fmt::format;
-
 use arboard::Clipboard;
-use eframe::{NativeOptions, egui, epaint::Vec2};
-use egui::widgets::{Button, Label};
+use eframe::{NativeOptions, egui};
+use egui::widgets::Label;
 
 fn main() -> eframe::Result<()> {
     eframe::run_native(
@@ -27,7 +25,7 @@ impl Default for FindEnd {
 }
 
 impl eframe::App for FindEnd {
-    fn update(&mut self, ctx: &egui::Context, frame: &mut eframe::Frame) {
+    fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         egui::CentralPanel::default().show(ctx, |ui| {
             ui.vertical_centered(|ui| {
                 if ui.button("Get clipboard").clicked() {
