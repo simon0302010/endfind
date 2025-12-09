@@ -1,3 +1,5 @@
+mod calculator;
+
 use std::time::Duration;
 use std::{collections::HashSet, fmt};
 
@@ -22,13 +24,19 @@ fn main() -> eframe::Result<()> {
     )
 }
 
-#[derive(Default, Debug, PartialEq, Clone)]
-struct Point {
+#[derive(Debug, PartialEq, Clone)]
+pub struct Point {
     x: f32,
     y: f32,
     z: f32,
     yaw: f32,
     pitch: f32,
+}
+
+impl Default for Point {
+    fn default() -> Self {
+        Self { x: 0.0, y: 0.0, z: 0.0, yaw: 0.0, pitch: 0.0 }
+    }
 }
 
 impl Eq for Point {}
@@ -112,8 +120,11 @@ impl eframe::App for FindEnd {
                 // update display every frame
                 self.clipboard_text = if self.points.is_empty() {
                     "No points recorded".to_string()
+                } else if self.points.len() < 2 {
+                    format!("{} points recorded", self.points.len())
                 } else {
-                    format!("Points: {}\n{:?}", self.points.len(), self.points)
+                    let result = calculator::triangulate(self.points.iter().cloned().collect::<Vec<Point>>());
+                    format!("{}", result)
                 };
 
                 ui.add(Label::new(format!("{}", self.clipboard_text)));
