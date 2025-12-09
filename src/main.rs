@@ -1,7 +1,10 @@
 mod calculator;
+mod structs;
 
+use structs::*;
+
+use std::collections::HashSet;
 use std::time::Duration;
-use std::{collections::HashSet, fmt};
 
 use arboard::Clipboard;
 use eframe::{NativeOptions, egui};
@@ -13,7 +16,7 @@ fn main() -> eframe::Result<()> {
     let options = NativeOptions {
         viewport: ViewportBuilder::default()
             .with_always_on_top()
-            .with_inner_size([200.0, 200.0]),
+            .with_inner_size([300.0, 300.0]),
         ..Default::default()
     };
 
@@ -22,43 +25,6 @@ fn main() -> eframe::Result<()> {
         options,
         Box::new(|_cc| Ok(Box::new(FindEnd::default()))),
     )
-}
-
-#[derive(Debug, PartialEq, Clone)]
-pub struct Point {
-    x: f32,
-    y: f32,
-    z: f32,
-    yaw: f32,
-    pitch: f32,
-}
-
-impl Default for Point {
-    fn default() -> Self {
-        Self { x: 0.0, y: 0.0, z: 0.0, yaw: 0.0, pitch: 0.0 }
-    }
-}
-
-impl Eq for Point {}
-
-impl std::hash::Hash for Point {
-    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-        self.x.to_bits().hash(state);
-        self.y.to_bits().hash(state);
-        self.z.to_bits().hash(state);
-        self.yaw.to_bits().hash(state);
-        self.pitch.to_bits().hash(state);
-    }
-}
-
-impl fmt::Display for Point {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "X: {}, Y: {}, Z: {}\nYaw: {}, Pitch: {}",
-            self.x, self.y, self.z, self.yaw, self.pitch
-        )
-    }
 }
 
 struct FindEnd {
@@ -120,11 +86,16 @@ impl eframe::App for FindEnd {
                 // update display every frame
                 self.clipboard_text = if self.points.is_empty() {
                     "No points recorded".to_string()
-                } else if self.points.len() < 2 {
+                } else if self.points.len() < 1 {
                     format!("{} points recorded", self.points.len())
                 } else {
-                    let result = calculator::triangulate(self.points.iter().cloned().collect::<Vec<Point>>());
-                    format!("{}", result)
+                    if let Some(res) =
+                        calculator::triangulate(self.points.iter().cloned().collect::<Vec<Point>>())
+                    {
+                        format!("{}", res)
+                    } else {
+                        "Calculation error".to_string()
+                    }
                 };
 
                 ui.add(Label::new(format!("{}", self.clipboard_text)));
@@ -154,14 +125,8 @@ impl FindEnd {
                 z: filtered.get(2).copied().unwrap_or_default(),
                 yaw: {
                     let raw = filtered.get(3).copied().unwrap_or_default();
-                    let normalized = raw % 360.0;
-                    if normalized > 180.0 {
-                        normalized - 360.0
-                    } else if normalized < -180.0 {
-                        normalized + 360.0
-                    } else {
-                        normalized
-                    }
+                    let normalized = ((raw % 360.0) + 360.0) % 360.0;
+                    normalized
                 },
                 pitch: filtered.get(4).copied().unwrap_or_default(),
             };
