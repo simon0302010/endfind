@@ -1,3 +1,5 @@
+use std::f32::consts::PI;
+
 use crate::structs::Point;
 
 pub fn dist(a: Point, b: Point) -> f32 {
@@ -29,9 +31,11 @@ pub fn farthest_points(points: &Vec<Point>) -> Option<(Point, Point, f32)> {
     Some((best_a, best_b, best_dist))
 }
 
-pub fn to_cartesian(yaw: f32) -> f32 {
-    // Minecraft: 0° = South, clockwise
-    // Cartesian: 0° = East, counterclockwise
-    let cartesian = 90.0 - yaw;
-    cartesian.rem_euclid(360.0)
+pub fn to_rad(deg: f32) -> f32 {
+    deg * PI / 180.0
+}
+
+#[allow(dead_code)]
+pub fn to_deg(rad: f32) -> f32 {
+    rad * 180.0 / PI
 }

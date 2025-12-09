@@ -52,12 +52,17 @@ pub struct Prediction {
 
 impl fmt::Display for Prediction {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "Prediction:\nX: {}, Z: {}\nConfidence: {}%",
-            self.x,
-            self.z,
-            (self.confidence.clamp(0.0, 1.0) * 100.0).round() as u16
-        )
+        // only show confidence if it's over 0.0
+        if self.confidence > 0.0 {
+            write!(
+                f,
+                "Prediction:\nX: {}, Z: {}\nConfidence: {}%",
+                self.x,
+                self.z,
+                (self.confidence.clamp(0.0, 1.0) * 100.0).round() as u16
+            )
+        } else {
+            write!(f, "Prediction:\nX: {}, Z: {}", self.x, self.z,)
+        }
     }
 }

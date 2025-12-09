@@ -4,13 +4,11 @@ mod structs;
 use structs::*;
 
 use std::collections::HashSet;
-use std::time::Duration;
 
 use arboard::Clipboard;
 use eframe::{NativeOptions, egui};
 use egui::ViewportBuilder;
 use egui::widgets::Label;
-use egui_notify::Toasts;
 
 fn main() -> eframe::Result<()> {
     let options = NativeOptions {
@@ -31,7 +29,6 @@ struct FindEnd {
     clipboard: Clipboard,
     clipboard_text: String,
     points: HashSet<Point>,
-    toasts: Toasts,
     last_clipboard: String,
     running: bool,
 }
@@ -42,7 +39,6 @@ impl Default for FindEnd {
             clipboard: Clipboard::new().expect("failed to initialize clipboard"),
             clipboard_text: String::new(),
             points: HashSet::new(),
-            toasts: Toasts::default(),
             last_clipboard: String::new(),
             running: false,
         }
@@ -77,16 +73,13 @@ impl eframe::App for FindEnd {
                 if ui.button("Clear measurements").clicked() {
                     self.points.clear();
                     self.clipboard_text = String::new();
-                    self.toasts
-                        .info("Cleared measurements")
-                        .duration(Duration::from_secs(2));
                 }
                 ui.add_space(10.0);
 
                 // update display every frame
                 self.clipboard_text = if self.points.is_empty() {
                     "No points recorded".to_string()
-                } else if self.points.len() < 1 {
+                } else if self.points.len() < 2 {
                     format!("{} points recorded", self.points.len())
                 } else {
                     if let Some(res) =
@@ -98,11 +91,17 @@ impl eframe::App for FindEnd {
                     }
                 };
 
-                ui.add(Label::new(format!("{}", self.clipboard_text)));
+                if self.points.len() < 2 {
+                    ui.add(Label::new(format!("{}", self.clipboard_text)));
+                } else {
+                    ui.add(Label::new(
+                        egui::RichText::new(format!("{}", self.clipboard_text))
+                            .color(egui::Color32::RED)
+                            .heading(),
+                    ));
+                }
             })
         });
-
-        self.toasts.show(ctx);
     }
 }
 
@@ -133,9 +132,6 @@ impl FindEnd {
 
             self.points.insert(point);
             self.clipboard_text = format!("{:?}", self.points);
-            self.toasts
-                .info("Stored new point")
-                .duration(Duration::from_secs(2));
         }
     }
 }

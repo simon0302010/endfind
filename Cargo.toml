@@ -6,5 +6,4 @@ edition = "2024"
 [dependencies]
 egui = "0.33"
 eframe = "0.33"
-egui-notify = "0.21"
 arboard = { version = "3.6", features = ["wayland-data-control"] }
