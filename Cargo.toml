@@ -10,3 +10,5 @@ license = "GPL-3.0-only"
 egui = "0.33"
 eframe = "0.33"
 arboard = { version = "3.6", features = ["wayland-data-control"] }
+libm = "0.2"
+rand = "0.9"

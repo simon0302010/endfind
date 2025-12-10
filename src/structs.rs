@@ -2,11 +2,11 @@ use std::fmt;
 
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub struct Point {
-    pub x: f32,
-    pub y: f32,
-    pub z: f32,
-    pub yaw: f32,
-    pub pitch: f32,
+    pub x: f64,
+    pub y: f64,
+    pub z: f64,
+    pub yaw: f64,
+    pub pitch: f64,
 }
 
 impl Default for Point {
@@ -45,9 +45,9 @@ impl fmt::Display for Point {
 
 #[derive(Debug, Default, Clone, Copy)]
 pub struct Prediction {
-    pub x: f32,
-    pub z: f32,
-    pub confidence: f32,
+    pub x: f64,
+    pub z: f64,
+    pub confidence: f64,
 }
 
 impl fmt::Display for Prediction {

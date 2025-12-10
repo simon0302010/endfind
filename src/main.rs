@@ -4,11 +4,14 @@ mod structs;
 use structs::*;
 
 use std::collections::HashSet;
+use std::time::Instant;
 
 use arboard::Clipboard;
 use eframe::{NativeOptions, egui};
 use egui::ViewportBuilder;
 use egui::widgets::Label;
+
+use crate::calculator::Triangulator;
 
 fn main() -> eframe::Result<()> {
     let options = NativeOptions {
@@ -56,6 +59,30 @@ impl eframe::App for FindEnd {
                 if self.running {
                     self.process_clipboard(&current);
                 }
+
+                // update display every frame
+                self.clipboard_text = if self.points.is_empty() {
+                    "No points recorded".to_string()
+                } else if self.points.len() < 2 {
+                    format!("{} points recorded", self.points.len())
+                } else {
+                    if let Some(res) = {
+                        let start = Instant::now();
+                        let calc = Triangulator::new(
+                            0.03,
+                            self.points.iter().cloned().collect::<Vec<Point>>(),
+                        );
+                        println!(
+                            "calculation took {} microseconds.",
+                            start.elapsed().as_micros()
+                        );
+                        calc.find_stronghold(1500, 2, true)
+                    } {
+                        format!("{}", res)
+                    } else {
+                        "Calculation error".to_string()
+                    }
+                };
             }
         }
 
@@ -76,21 +103,6 @@ impl eframe::App for FindEnd {
                 }
                 ui.add_space(10.0);
 
-                // update display every frame
-                self.clipboard_text = if self.points.is_empty() {
-                    "No points recorded".to_string()
-                } else if self.points.len() < 2 {
-                    format!("{} points recorded", self.points.len())
-                } else {
-                    if let Some(res) =
-                        calculator::triangulate(self.points.iter().cloned().collect::<Vec<Point>>())
-                    {
-                        format!("{}", res)
-                    } else {
-                        "Calculation error".to_string()
-                    }
-                };
-
                 if self.points.len() < 2 {
                     ui.add(Label::new(format!("{}", self.clipboard_text)));
                 } else {
@@ -107,14 +119,14 @@ impl eframe::App for FindEnd {
 
 impl FindEnd {
     fn process_clipboard(&mut self, clipboard: &str) {
-        let filtered: Vec<f32> = clipboard
+        let filtered: Vec<f64> = clipboard
             .chars()
             .filter(|c| c.is_numeric() || [' ', '.', '-'].contains(c))
             .collect::<String>()
             .trim()
             .split(' ')
-            .filter(|part| part.parse::<f32>().is_ok())
-            .map(|part| part.parse::<f32>().unwrap_or_default())
+            .filter(|part| part.parse::<f64>().is_ok())
+            .map(|part| part.parse::<f64>().unwrap_or_default())
             .collect();
 
         if filtered.len() == 5 {
