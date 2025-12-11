@@ -40,7 +40,7 @@ impl Default for FindEnd {
     fn default() -> Self {
         Self {
             clipboard: Clipboard::new().expect("failed to initialize clipboard"),
-            clipboard_text: String::new(),
+            clipboard_text: "No points recorded".to_string(),
             points: HashSet::new(),
             last_clipboard: String::new(),
             running: false,
@@ -69,18 +69,19 @@ impl eframe::App for FindEnd {
                     if let Some(res) = {
                         let start = Instant::now();
                         let calc = Triangulator::new(
-                            0.03,
+                            0.075,
                             self.points.iter().cloned().collect::<Vec<Point>>(),
                         );
+                        let result = calc.find_stronghold(500, 1, true);
                         println!(
-                            "calculation took {} microseconds.",
-                            start.elapsed().as_micros()
+                            "calculation took {}ms.",
+                            start.elapsed().as_millis()
                         );
-                        calc.find_stronghold(1500, 2, true)
+                        result
                     } {
                         format!("{}", res)
                     } else {
-                        "Calculation error".to_string()
+                        "Confidence too low".to_string()
                     }
                 };
             }
@@ -99,7 +100,7 @@ impl eframe::App for FindEnd {
 
                 if ui.button("Clear measurements").clicked() {
                     self.points.clear();
-                    self.clipboard_text = String::new();
+                    self.clipboard_text = "No points recorded".to_string();
                 }
                 ui.add_space(10.0);
 
@@ -143,7 +144,6 @@ impl FindEnd {
             };
 
             self.points.insert(point);
-            self.clipboard_text = format!("{:?}", self.points);
         }
     }
 }
