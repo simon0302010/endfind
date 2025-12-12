@@ -43,7 +43,7 @@ impl Default for FindEnd {
             clipboard_text: "No points recorded".to_string(),
             points: HashSet::new(),
             last_clipboard: String::new(),
-            running: false,
+            running: true, // maybe make running = false later
         }
     }
 }
@@ -62,9 +62,9 @@ impl eframe::App for FindEnd {
 
                 // update display every frame
                 self.clipboard_text = if self.points.is_empty() {
-                    "No points recorded".to_string()
+                    "No points recorded.".to_string()
                 } else if self.points.len() < 2 {
-                    format!("{} points recorded", self.points.len())
+                    format!("{}/2 points recorded.", self.points.len())
                 } else {
                     if let Some(res) = {
                         let start = Instant::now();
@@ -72,11 +72,8 @@ impl eframe::App for FindEnd {
                             0.075,
                             self.points.iter().cloned().collect::<Vec<Point>>(),
                         );
-                        let result = calc.find_stronghold(500, 1, true);
-                        println!(
-                            "calculation took {}ms.",
-                            start.elapsed().as_millis()
-                        );
+                        let result = calc.find_stronghold(500, 2, true);
+                        println!("calculation took {}ms.", start.elapsed().as_millis());
                         result
                     } {
                         format!("{}", res)
