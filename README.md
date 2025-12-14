@@ -1,12 +1,11 @@
 # Endfind
 
-Endfind is a simple application designed to help you find the End Portal in Minecraft using multiple algorithms. Its heavily inspired by and based on algorithms from [Ninjabrain Bot](https://github.com/Ninjabrain1/Ninjabrain-Bot).
+Endfind is a simple application designed to help you find the End Portal in Minecraft.
 
 ## Features
 
 - Simple GUI
 - Takes ender eye throw coordinates from your clipboard
-- Pretty accurate
 
 ## Installation
 
@@ -32,7 +31,3 @@ After that throw a second ender eye, look at it and press F3+C again. The applic
 ## License
 
 This project is licensed under the GNU General Public License Version 3. See the [LICENSE](LICENSE) file for details.
-
-## Credits
-
-This project is heavily inspired by and based on algorithms from [Ninjabrain Bot](https://github.com/Ninjabrain1/Ninjabrain-Bot).

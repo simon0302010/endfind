@@ -11,7 +11,7 @@ use eframe::{NativeOptions, egui};
 use egui::ViewportBuilder;
 use egui::widgets::Label;
 
-use crate::calculator::Triangulator;
+use crate::calculator::find_portal;
 
 fn main() -> eframe::Result<()> {
     let options = NativeOptions {
@@ -68,11 +68,7 @@ impl eframe::App for FindEnd {
                 } else {
                     if let Some(res) = {
                         let start = Instant::now();
-                        let calc = Triangulator::new(
-                            0.075,
-                            self.points.iter().cloned().collect::<Vec<Point>>(),
-                        );
-                        let result = calc.find_stronghold(500, 2, true);
+                        let result = find_portal(self.points.iter().cloned().collect::<Vec<Point>>());
                         println!("calculation took {}ms.", start.elapsed().as_millis());
                         result
                     } {
