@@ -26,7 +26,7 @@ endfind
 
 Once the application is running, press the "Start measurement" button and set your FOV to 30.
 Then throw one ender eye, look directly at it and press F3+C to copy the coordinates to your clipboard.
-After that throw a second ender eye, look at it and press F3+C again. The application will then calculate and display the location of the End Portal.
+After that, move about 50 blocks, throw a second ender eye, look at it and press F3+C again. The application will then calculate and display the location of the End Portal. Please move farther away if the accuracy is low.
 
 ## License
 
